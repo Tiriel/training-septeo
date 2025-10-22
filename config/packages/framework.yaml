@@ -1,12 +1,10 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     secret: '%env(APP_SECRET)%'
+    #csrf_protection: true
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true
-
-    #esi: true
-    #fragments: true
 
     http_client:
         scoped_clients:
@@ -15,6 +13,9 @@ framework:
                 headers:
                     Accept: 'application/json'
                     apikey: '%env(CONF_API_KEY)%'
+
+    #esi: true
+    #fragments: true
 
 when@test:
     framework:

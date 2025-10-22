@@ -21,7 +21,7 @@ class Volunteering
     #[ORM\Column]
     private ?\DateTimeImmutable $startAt = null;
 
-    #[Assert\GreaterThanOrEqual(propertyPath: 'startAt')]
+    #[Assert\GreaterThan(propertyPath: 'startAt')]
     #[Assert\LessThanOrEqual(propertyPath: 'conference.endAt')]
     #[Assert\NotNull()]
     #[ORM\Column]

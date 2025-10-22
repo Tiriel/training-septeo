@@ -12,17 +12,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups(['Volunteering'])]
+    #[Groups('Volunteering')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['Volunteering'])]
+    #[Groups('Volunteering')]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
@@ -47,6 +48,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Organization>
      */
+    #[Groups('Volunteering')]
     #[ORM\ManyToMany(targetEntity: Organization::class, inversedBy: 'users')]
     private Collection $organizations;
 
@@ -58,6 +60,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $apiKey = null;
+
+    #[ORM\OneToOne(mappedBy: 'forUser', cascade: ['persist', 'remove'])]
+    private ?VolunteerProfile $volunteerProfile = null;
 
     public function __construct()
     {
@@ -95,6 +100,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @see UserInterface
+     *
+     * @return list<string>
      */
     public function getRoles(): array
     {
@@ -118,7 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -128,17 +135,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->password = $password;
 
         return $this;
-    }
-
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
-    public function __serialize(): array
-    {
-        $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
-
-        return $data;
     }
 
     #[\Deprecated]
@@ -227,6 +223,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $conference->setCreatedBy(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getVolunteerProfile(): ?VolunteerProfile
+    {
+        return $this->volunteerProfile;
+    }
+
+    public function setVolunteerProfile(?VolunteerProfile $volunteerProfile): User
+    {
+        $this->volunteerProfile = $volunteerProfile;
+        $volunteerProfile->setForUser($this);
 
         return $this;
     }
