@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Form\ConferenceType;
 use App\Matching\Strategy\TagBasedStrategy;
 use App\Message\MatchVolunteerMessage;
+use App\Message\SendEmailMessage;
 use App\Search\ConferenceSearchInterface;
 use App\Search\DatabaseConferenceSearch;
 use App\Security\Voter\EditionVoter;
@@ -18,12 +19,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class ConferenceController extends AbstractController
 {
+    public function __construct(private MessageBusInterface $messageBus)
+    {
+    }
+
     // Possible solution to SF_ADVANCED exercise 14
     //#[IsGranted(new Expression('is_granted("ROLE_ORGANIZER") or is_granted("ROLE_WEBSITE")'))]
     #[Route('/conference/new', name: 'app_conference_new', methods: ['GET', 'POST'])]
@@ -49,6 +55,8 @@ class ConferenceController extends AbstractController
 
             $manager->persist($conference);
             $manager->flush();
+
+            $this->messageBus->dispatch(new SendEmailMessage('john@doe.com', 'New Conference', '...'));
 
             return $this->redirectToRoute('app_conference_show', ['id' => $conference->getId()]);
         }
@@ -83,8 +91,10 @@ class ConferenceController extends AbstractController
     }
 
     #[Route('/conferences/match/{strategy}', name: 'app_conference_match', requirements: ['strategy' => 'tag|skill|location'])]
-    public function match(string $strategy, #[CurrentUser] User $user, TagBasedStrategy $tagStrategy): Response
+    public function match(string $strategy, #[CurrentUser] User $user, TagBasedStrategy $tagStrategy, MessageBusInterface $bus): Response
     {
+        $bus->dispatch(new MatchVolunteerMessage($strategy, $user->getId()));
+
         return $this->render('conference/list.html.twig', [
             'conferences' => $tagStrategy->match($user),
         ]);
