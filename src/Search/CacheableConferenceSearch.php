@@ -18,7 +18,7 @@ class CacheableConferenceSearch implements ConferenceSearchInterface
 
     public function search(?string $name): array
     {
-        return $this->cache->get(md5($name), function (ItemInterface $item) use ($name) {
+        return $this->cache->get(hash('sha256', $name), function (ItemInterface $item) use ($name) {
             $item->expiresAfter(3600);
 
             return $this->inner->search($name);

@@ -13,6 +13,46 @@ class ConferenceFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $conference = (new Conference())
+            ->setName('Afup Day')
+            ->setDescription('Super conference')
+            ->setAccessible(true)
+            ->setStartAt(new \DateTimeImmutable('2021-03-20'))
+            ->setEndAt(new \DateTimeImmutable('2021-03-21'));
+        $manager->persist($conference);
+
+        $conference = (new Conference())
+            ->setName('Viva Tech')
+            ->setDescription('La French Tech dans tous ses états')
+            ->setAccessible(true)
+            ->setStartAt(new \DateTimeImmutable('2022-03-20'))
+            ->setEndAt(new \DateTimeImmutable('2022-03-21'));
+        $manager->persist($conference);
+
+        $conference = (new Conference())
+            ->setName('Confoo')
+            ->setDescription('La conférence Candienne')
+            ->setAccessible(true)
+            ->setStartAt(new \DateTimeImmutable('2023-03-20'))
+            ->setEndAt(new \DateTimeImmutable('2023-03-21'));
+        $manager->persist($conference);
+
+        $conference = (new Conference())
+            ->setName('Symfony Con')
+            ->setDescription('Awesome')
+            ->setAccessible(true)
+            ->setStartAt(new \DateTimeImmutable('2024-03-20'))
+            ->setEndAt(new \DateTimeImmutable('2024-03-21'));
+        $manager->persist($conference);
+
+        $conference = (new Conference())
+            ->setName('DevConf')
+            ->setDescription('Google')
+            ->setAccessible(true)
+            ->setStartAt(new \DateTimeImmutable('2025-03-20'))
+            ->setEndAt(new \DateTimeImmutable('2025-03-21'));
+        $manager->persist($conference);
+
         for ($i = 1; $i <= 10; $i++) {
             $year = '20' . str_pad($i, 2, 0, STR_PAD_LEFT);
             $conference = (new Conference())

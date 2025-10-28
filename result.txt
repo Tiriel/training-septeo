@@ -1,0 +1,13 @@
+PHPUnit 9.6.29 by Sebastian Bergmann and contributors.
+
+Testing 
+Conference (App\Tests\Entity\Conference)
+ ✔ Setters and getters set and get
+
+Api To Conference Transformer (App\Tests\Transformer\ApiToConferenceTransformer)
+ ✔ Transformer transforms data from api
+ ✔ Transformer throws on missing data
+
+Time: 00:00.042, Memory: 8.00 MB
+
+OK (3 tests, 13 assertions)
