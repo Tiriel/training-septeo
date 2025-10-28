@@ -3,9 +3,11 @@
 namespace App\Search;
 
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
+use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
+#[When('prod')]
 #[AsDecorator(ConferenceSearchInterface::class)]
 class CacheableConferenceSearch implements ConferenceSearchInterface
 {
